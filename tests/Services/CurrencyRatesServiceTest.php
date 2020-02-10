@@ -14,7 +14,7 @@ class CurrencyRatesServiceTest extends TestCase
 {
     public function test_getAverageRate_returnPositiveFloatRate()
     {
-        $currencyRatesService = new CurrencyRatesService([CbrResource::NAME, RbcResource::NAME]);
+        $currencyRatesService = new CurrencyRatesService();
 
         $date = new \DateTime('yesterday');
         $testRate = $currencyRatesService->getAverageRate('USD', $date);
@@ -31,7 +31,7 @@ class CurrencyRatesServiceTest extends TestCase
      */
     public function test_getAverageRate_ThrowUnsupportedCurrencyCodeException()
     {
-        $currencyRatesService = new CurrencyRatesService([CbrResource::NAME, RbcResource::NAME]);
+        $currencyRatesService = new CurrencyRatesService();
 
         $date = new \DateTime('yesterday');
         $currencyRatesService->getAverageRate('UNKNOWN', $date);
@@ -42,10 +42,10 @@ class CurrencyRatesServiceTest extends TestCase
      */
     public function test_getRateFromResource_ThrowUnsupportedCurrencyCodeException()
     {
-        $currencyRatesService = new CurrencyRatesService([CbrResource::NAME, RbcResource::NAME]);
+        $currencyRatesService = new CurrencyRatesService();
 
         $date = new \DateTime('yesterday');
-        $currencyRatesService->getRateFromResource('UNKNOWN', RbcResource::NAME, $date);
+        $currencyRatesService->getRateFromResource('UNKNOWN', RbcResource::class, $date);
     }
 
     /**
@@ -61,7 +61,7 @@ class CurrencyRatesServiceTest extends TestCase
      */
     public function test_getRateFromResource_ThrowUnknownResourceClassException()
     {
-        $currencyRatesService = new CurrencyRatesService([CbrResource::NAME, RbcResource::NAME]);
+        $currencyRatesService = new CurrencyRatesService();
 
         $date = new \DateTime('yesterday');
         $currencyRatesService->getRateFromResource('USD', 'UNKNOWN', $date);
