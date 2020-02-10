@@ -16,11 +16,6 @@ use MovaviTest\Exceptions\NonRateException;
 class RbcResource implements ResourceInterface
 {
     /**
-     *  Resource name for identification
-     */
-    const NAME = 'rbc';
-
-    /**
      *  Resource url without parameters
      */
     const URL = 'https://cash.rbc.ru/cash/json/converter_currency_rate/';

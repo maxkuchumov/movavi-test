@@ -4,6 +4,7 @@ namespace MovaviTest\Services;
 
 use MovaviTest\Resources\RbcResource;
 use MovaviTest\Resources\CbrResource;
+use MovaviTest\Resources\ResourceInterface;
 use MovaviTest\Exceptions\UnknownResourceClassException;
 
 
@@ -17,9 +18,9 @@ use MovaviTest\Exceptions\UnknownResourceClassException;
 class CurrencyRatesService
 {
     /**
-     * The total list of supported resources
+     * The total list of supported resource classes (by default)
      */
-    const AVAILABLE_RESOURCES = [RbcResource::NAME, CbrResource::NAME];
+    const AVAILABLE_RESOURCE_CLASSES = [RbcResource::class, CbrResource::class];
 
     /**
      * resource objects array
@@ -29,25 +30,24 @@ class CurrencyRatesService
 
     /**
      * CurrencyRatesService constructor.
-     * @param array $resources
+     * @param array $resourceClasses
      * @throws UnknownResourceClassException
      */
-    public function __construct(array $resources = [])
+    public function __construct(array $resourceClasses = [])
     {
-
-        if (empty($resources)) {
+        if (empty($resourceClasses)) {
             // by default all available resources will be used
-            $resources = self::AVAILABLE_RESOURCES;
+            $resourceClasses = self::AVAILABLE_RESOURCE_CLASSES;
         }
 
-        $resources = array_unique($resources);
+        $resourceClasses = array_unique($resourceClasses);
 
         // create resource objects from resources list
-        foreach ($resources as $resourceCode) {
-            $resourceClass = 'MovaviTest\\Resources\\' . ucfirst($resourceCode) . 'Resource';
-            if (in_array($resourceClass, get_declared_classes())) {
+        foreach ($resourceClasses as $resourceClass) {
 
-                $this->resources[$resourceCode] = new $resourceClass();
+            if (class_exists($resourceClass, true) && in_array(ResourceInterface::class, class_implements($resourceClass))) {
+
+                $this->resources[$resourceClass] = new $resourceClass();
             } else {
 
                 throw new UnknownResourceClassException('Unknown resource class: ' . $resourceClass);
@@ -59,23 +59,22 @@ class CurrencyRatesService
      * Sends request to particular resource
      *
      * @param string $currencyCode
-     * @param string $resourceCode
+     * @param string $resourceClass
      * @param \DateTime|null $date
      * @return float
      * @throws UnknownResourceClassException
      */
-    public function getRateFromResource(string $currencyCode, string $resourceCode, \DateTime $date = null): float
+    public function getRateFromResource(string $currencyCode, string $resourceClass, \DateTime $date = null): float
     {
-        $resourceCode = strtolower($resourceCode);
-        if (!in_array($resourceCode, array_keys($this->resources))) {
-            throw new UnknownResourceClassException('Unknown resource code: ' . $resourceCode);
+        if (!in_array($resourceClass, array_keys($this->resources))) {
+            throw new UnknownResourceClassException('Unknown resource class: ' . $resourceClass);
         }
 
         if (is_null($date)) {
             $date = new \DateTime(); // today by default
         }
 
-        return $this->resources[$resourceCode]->getRate($currencyCode, $date);
+        return $this->resources[$resourceClass]->getRate($currencyCode, $date);
     }
 
     /**
@@ -88,9 +87,13 @@ class CurrencyRatesService
      */
     public function getAverageRate(string $currencyCode, \DateTime $date = null): float
     {
+        if (is_null($date)) {
+            $date = new \DateTime(); // today by default
+        }
+
         $rates = [];
-        foreach (eys($this->resources) as $resourceCode) {
-            $rates[] = $this->getRateFromResource($currencyCode, $resourceCode, $date);
+        foreach ($this->resources as $resourceObj) {
+            $rates[] = $resourceObj->getRate($currencyCode, $date);
         }
 
         return array_sum($rates) / count($rates);

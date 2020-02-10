@@ -15,11 +15,6 @@ use MovaviTest\Exceptions\NonRateException;
 class CbrResource implements ResourceInterface
 {
     /**
-     *  Resource name for identification
-     */
-    const NAME = 'cbr';
-
-    /**
      *  Resource url without parameters
      */
     const URL = 'http://www.cbr.ru/scripts/XML_dynamic.asp';
