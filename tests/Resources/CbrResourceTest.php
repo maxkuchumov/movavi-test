@@ -45,4 +45,41 @@ class CbrResourceTest extends TestCase
         $cbrResource->getRate('USD', $date);
     }
 
+    /**
+     * @expectedException MovaviTest\Exceptions\NonRateException
+     */
+    public function test_parseXmlResponse_TrowNonRateException()
+    {
+        // incorrect xml (wrong <NOValue> teg)
+        $testXml = '<ValCurs ID="R01235" DateRange1="14.03.2001" DateRange2="14.03.2001" name="Foreign Currency Market Dynamic">
+                      <Record Date="14.03.2001" Id="R01235">
+                        <Nominal>1</Nominal>
+                        <NOValue>28,6500</NOValue>
+                      </Record>
+                     </ValCurs>';
+
+        $class = new \ReflectionClass(CbrResource::class);
+        $method = $class->getMethod('parseXmlResponse');
+        $method->setAccessible(true);
+        $rbcObj = new CbrResource();
+        $method->invoke($rbcObj, $testXml);
+    }
+
+    public function test_parseXmlResponse_CheckReturnValue()
+    {
+        // example of correct xml response
+        $testXml = '<ValCurs ID="R01235" DateRange1="14.03.2001" DateRange2="14.03.2001" name="Foreign Currency Market Dynamic">
+                      <Record Date="14.03.2001" Id="R01235">
+                        <Nominal>1</Nominal>
+                        <Value>28,6500</Value>
+                      </Record>
+                     </ValCurs>';
+
+        $class = new \ReflectionClass(CbrResource::class);
+        $method = $class->getMethod('parseXmlResponse');
+        $method->setAccessible(true);
+        $rbcObj = new CbrResource();
+        $rate = $method->invoke($rbcObj, $testXml);
+        $this->assertEquals(28.65, $rate);
+    }
 }
