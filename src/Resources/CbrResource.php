@@ -92,19 +92,11 @@ class CbrResource implements ResourceInterface
         $xml = @simplexml_load_string($xmlData);
         $parsedData = json_decode(json_encode($xml), true);
 
-        if (!$parsedData || empty($parsedData['Record'])) {
+        if (!$parsedData || empty($parsedData['Record']) || !isset($parsedData['Record']['Value'])) {
             throw new NonRateException('Resource cbr.ru has not return any rate data');
         }
 
-        if (isset($parsedData['Record']['Value'])) {
-
-            $rate = $parsedData['Record']['Value'];
-        } else {
-
-            $record = array_shift($parsedData['Record']);
-            $rate = $record['Value'];
-        }
-
+        $rate = $parsedData['Record']['Value'];
         return floatval(str_replace(',', '.', $rate));
     }
 

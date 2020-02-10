@@ -14,27 +14,28 @@ use MovaviTest\Exceptions\UnavailableResourceException;
 class Curl
 {
     /**
-     *  default timeout in seconds
-     */
-    const CURL_TIMEOUT = 10;
-
-    /**
      * URL string for fetching data from
      *
      * @var string
      */
     protected $url;
 
-
+    /**
+     * Timeout - the maximum number of seconds to allow cURL functions to execute.
+     *
+     * @var integer
+     */
+    protected $timeoutSec;
     /**
      * Curl constructor.
      * @param string $url
      */
-    public function __construct(string $url)
+    public function __construct(string $url, int $timeoutSec = 10)
     {
         // TODO: validate url
 
         $this->url = $url;
+        $this->timeoutSec = $timeoutSec;
     }
 
     /**
@@ -48,7 +49,7 @@ class Curl
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $this->url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_TIMEOUT, self::CURL_TIMEOUT);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeoutSec);
         $output = curl_exec($ch);
 
         if (curl_errno($ch)) {
