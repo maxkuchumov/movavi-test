@@ -11,7 +11,7 @@ class CbrResourceTest extends TestCase
 
     public function test_GetRate_returnPositiveFloatRate()
     {
-        $date = new \DateTime('yesterday');
+        $date = new \DateTime('08.02.2020');
         $cbrResource = new CbrResource();
 
         $usdRate = $cbrResource->getRate('USD', $date);
@@ -28,7 +28,7 @@ class CbrResourceTest extends TestCase
      */
     public function test_GetRate_ThrowUnsupportedCurrencyCodeException()
     {
-        $date = new \DateTime('yesterday');
+        $date = new \DateTime('08.02.2020');
         $cbrResource = new CbrResource();
 
         $cbrResource->getRate('UNKNOWN', $date);

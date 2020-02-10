@@ -16,7 +16,7 @@ class CurrencyRatesServiceTest extends TestCase
     {
         $currencyRatesService = new CurrencyRatesService();
 
-        $date = new \DateTime('yesterday');
+        $date = new \DateTime('08.02.2020');
         $testRate = $currencyRatesService->getAverageRate('USD', $date);
         $this->assertInternalType('float', $testRate);
         $this->assertGreaterThan(0, $testRate);
@@ -33,7 +33,7 @@ class CurrencyRatesServiceTest extends TestCase
     {
         $currencyRatesService = new CurrencyRatesService();
 
-        $date = new \DateTime('yesterday');
+        $date = new \DateTime('08.02.2020');
         $currencyRatesService->getAverageRate('UNKNOWN', $date);
     }
 
@@ -44,7 +44,7 @@ class CurrencyRatesServiceTest extends TestCase
     {
         $currencyRatesService = new CurrencyRatesService();
 
-        $date = new \DateTime('yesterday');
+        $date = new \DateTime('08.02.2020');
         $currencyRatesService->getRateFromResource('UNKNOWN', RbcResource::class, $date);
     }
 
@@ -63,7 +63,7 @@ class CurrencyRatesServiceTest extends TestCase
     {
         $currencyRatesService = new CurrencyRatesService();
 
-        $date = new \DateTime('yesterday');
+        $date = new \DateTime('08.02.2020');
         $currencyRatesService->getRateFromResource('USD', 'UNKNOWN', $date);
     }
 
