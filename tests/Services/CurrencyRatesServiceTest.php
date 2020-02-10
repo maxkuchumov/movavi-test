@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 use MovaviTest\Services\CurrencyRatesService;
 use MovaviTest\Resources\CbrResource;
 use MovaviTest\Resources\RbcResource;
+use MovaviTest\Resources\ResourceInterface;
 use MovaviTest\Exceptions\UnsupportedCurrencyCodeException;
 use MovaviTest\Exceptions\UnknownResourceClassException;
 
@@ -67,5 +68,16 @@ class CurrencyRatesServiceTest extends TestCase
         $currencyRatesService->getRateFromResource('USD', 'UNKNOWN', $date);
     }
 
+    public function test_createCurrencyRatesService_ResourcesContainsTwoObjects()
+    {
+        $currencyRatesService = new CurrencyRatesService([CbrResource::class, RbcResource::class]);
+        $refResources = new \ReflectionProperty(get_class($currencyRatesService), 'resources');
+        $refResources->setAccessible(true);
+        $resourcesArr = $refResources->getValue($currencyRatesService);
+        $this->assertCount(2, $resourcesArr);
+        foreach ($resourcesArr as $resourceObj) {
 
+            $this->assertTrue($resourceObj instanceof ResourceInterface);
+        }
+    }
 }
