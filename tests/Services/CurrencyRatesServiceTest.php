@@ -96,8 +96,8 @@ class CurrencyRatesServiceTest extends TestCase
      */
     public function test_getAverageRateFromResource_TrowUnknownResourceClassException()
     {
-        $currencyRatesService = new CurrencyRatesService([CbrResource::class, 'UNKNOWN_CLASS']);
-        $currencyRatesService->getAverageRateFromResources([], 'USD');
+        $currencyRatesService = new CurrencyRatesService();
+        $currencyRatesService->getAverageRateFromResources([CbrResource::class, 'UNKNOWN_CLASS'], 'USD');
     }
 
     public function test_getAverageRateFromResource_CheckMethodResult()
