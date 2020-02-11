@@ -44,8 +44,8 @@ class CbrResource implements ResourceInterface
      */
     public function getRate(string $currencyCode, \DateTime $date): float
     {
-        $curlObj = new Curl($this->getUrl($currencyCode, $date));
-        $data = $curlObj->getData($this->getUrl($currencyCode, $date));
+        $curlObj = new Curl($this->buildUrl($currencyCode, $date));
+        $data = $curlObj->getData();
 
         return $this->parseXmlResponse($data);
     }
@@ -58,7 +58,7 @@ class CbrResource implements ResourceInterface
      * @return string
      * @throws UnsupportedCurrencyCodeException
      */
-    protected function getUrl(string $currencyCode, \DateTime $date): string
+    protected function buildUrl(string $currencyCode, \DateTime $date): string
     {
         $urlDate = $date->format(static::URL_DATE_FORMAT);
         $urlCurrencyCode = static::CURRENCY_CODES_MAPPING[$currencyCode] ?? '';

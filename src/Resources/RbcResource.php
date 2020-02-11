@@ -46,7 +46,7 @@ class RbcResource implements ResourceInterface
      */
     public function getRate(string $currencyCode, \DateTime $date): float
     {
-        $curlObj = new Curl($this->getUrl($currencyCode, $date));
+        $curlObj = new Curl($this->buildUrl($currencyCode, $date));
         $jsonData = $curlObj->getData();
         return $this->parseJsonResponse($jsonData);
     }
@@ -59,7 +59,7 @@ class RbcResource implements ResourceInterface
      * @return string
      * @throws UnsupportedCurrencyCodeException
      */
-    protected function getUrl(string $currencyCode, \DateTime $date): string
+    protected function buildUrl(string $currencyCode, \DateTime $date): string
     {
 
         $urlCurrencyCode = static::CURRENCY_CODES_MAPPING[strtoupper($currencyCode)] ?? '';
