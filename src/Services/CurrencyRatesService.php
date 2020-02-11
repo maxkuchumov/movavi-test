@@ -6,6 +6,7 @@ use MovaviTest\Resources\RbcResource;
 use MovaviTest\Resources\CbrResource;
 use MovaviTest\Resources\ResourceInterface;
 use MovaviTest\Exceptions\UnknownResourceClassException;
+use MovaviTest\Exceptions\EmptyResourceListException;
 
 
 /**
@@ -78,7 +79,7 @@ class CurrencyRatesService
     }
 
     /**
-     * Sends requests to all available resources to get rate and calculate average value
+     * Sends requests to all available resources to get rate and calculate the average value
      *
      * @param string $currencyCode
      * @param \DateTime|null $date
@@ -87,13 +88,39 @@ class CurrencyRatesService
      */
     public function getAverageRate(string $currencyCode, \DateTime $date = null): float
     {
+        // run for all available resources
+        return $this->getAverageRateFromResources(array_keys($this->resources), $currencyCode, $date);
+    }
+
+
+    /**
+     * Send request to resources from the list to get rate and calculate the average value
+     *
+     * @param array $resourceClasses
+     * @param string $currencyCode
+     * @param \DateTime|null $date
+     * @return float
+     * @throws EmptyResourceListException
+     * @throws UnknownResourceClassException
+     */
+    public function getAverageRateFromResources(array $resourceClasses, string $currencyCode, \DateTime $date = null): float
+    {
+        if (empty($resourceClasses)) {
+            throw new EmptyResourceListException();
+        }
+
+        $unknownResources = array_diff($resourceClasses, array_keys($this->resources));
+        if (!empty($unknownResources)) {
+            throw new UnknownResourceClassException('Unknown resource class(es): ' . implode(', ', $unknownResources));
+        }
+
         if (is_null($date)) {
             $date = new \DateTime(); // today by default
         }
 
         $rates = [];
-        foreach ($this->resources as $resourceObj) {
-            $rates[] = $resourceObj->getRate($currencyCode, $date);
+        foreach ($resourceClasses as $resourceClass) {
+            $rates[] = $this->resources[$resourceClass]->getRate($currencyCode, $date);
         }
 
         return array_sum($rates) / count($rates);
