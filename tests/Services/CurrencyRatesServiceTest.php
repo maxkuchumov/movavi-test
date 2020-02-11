@@ -8,9 +8,6 @@ use MovaviTest\Services\CurrencyRatesService;
 use MovaviTest\Resources\CbrResource;
 use MovaviTest\Resources\RbcResource;
 use MovaviTest\Resources\ResourceInterface;
-use MovaviTest\Exceptions\UnknownResourceClassException;
-use MovaviTest\Exceptions\UnsupportedCurrencyCodeException;
-use MovaviTest\Exceptions\EmptyResourceListException;
 
 class CurrencyRatesServiceTest extends TestCase
 {
