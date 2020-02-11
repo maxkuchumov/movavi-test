@@ -4,7 +4,6 @@ namespace MovaviTest\Tests;
 
 use PHPUnit\Framework\TestCase;
 use MovaviTest\Resources\CbrResource;
-use MovaviTest\Exceptions\NonRateException;
 
 class CbrResourceTest extends TestCase
 {

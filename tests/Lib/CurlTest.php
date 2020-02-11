@@ -4,7 +4,6 @@ namespace MovaviTest\Tests;
 
 use PHPUnit\Framework\TestCase;
 use MovaviTest\Lib\Curl;
-use MovaviTest\Exceptions\UnavailableResourceException;
 
 class CurlTest extends TestCase
 {
