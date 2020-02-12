@@ -44,7 +44,7 @@ class CurrencyRatesServiceTest extends TestCase
         $currencyRatesService = new CurrencyRatesService();
 
         $date = new \DateTime('08.02.2020');
-        $currencyRatesService->getRateFromResource('UNKNOWN', RbcResource::class, $date);
+        $currencyRatesService->getRateFromResource(RbcResource::class, 'UNKNOWN', $date);
     }
 
     /**
@@ -63,7 +63,7 @@ class CurrencyRatesServiceTest extends TestCase
         $currencyRatesService = new CurrencyRatesService();
 
         $date = new \DateTime('08.02.2020');
-        $currencyRatesService->getRateFromResource('USD', 'UNKNOWN', $date);
+        $currencyRatesService->getRateFromResource('UNKNOWN', 'USD', $date);
     }
 
     public function test_createCurrencyRatesService_ResourcesContainsTwoObjects()

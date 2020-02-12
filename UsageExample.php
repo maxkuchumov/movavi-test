@@ -42,8 +42,8 @@ try {
     printf("Today USD average rate : %s%s", $avgUsdRate, $EOL);
     printf("Today Euro average rate : %s%s%s", $avgEurRate, $EOL, $EOL);
     // In this case you can try to get rates only from 'rbc' resource for example:
-        $rbcUsdRate = $currencyRatesService->getRateFromResource('USD', RbcResource::class);
-        $rbcEurRate = $currencyRatesService->getRateFromResource('EUR', RbcResource::class);
+        $rbcUsdRate = $currencyRatesService->getRateFromResource(RbcResource::class, 'USD');
+        $rbcEurRate = $currencyRatesService->getRateFromResource(RbcResource::class, 'EUR');
         printf("Today USD rate from rbc: %s%s", $rbcUsdRate, $EOL);
         printf("Today EUR rate from rbc: %s%s%s", $rbcEurRate, $EOL, $EOL);
 } catch (MovaviTestException $e) {

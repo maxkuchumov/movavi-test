@@ -2,7 +2,7 @@
 
 namespace MovaviTest\Resources;
 
-use MovaviTest\Lib\Curl;
+use MovaviTest\Lib\HttpClient;
 use MovaviTest\Exceptions\UnsupportedCurrencyCodeException;
 use MovaviTest\Exceptions\NonRateException;
 
@@ -44,8 +44,8 @@ class CbrResource implements ResourceInterface
      */
     public function getRate(string $currencyCode, \DateTime $date): float
     {
-        $curlObj = new Curl($this->buildUrl($currencyCode, $date));
-        $data = $curlObj->getData();
+        $httpClient = new HttpClient($this->buildUrl($currencyCode, $date));
+        $data = $httpClient->getData();
 
         return $this->parseXmlResponse($data);
     }

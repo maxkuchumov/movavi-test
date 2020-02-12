@@ -5,13 +5,13 @@ namespace MovaviTest\Lib;
 use MovaviTest\Exceptions\UnavailableResourceException;
 
 /**
- * Class Curl
+ * Class HttpClient
  *
  * Very simple implementation of CURL wrapper, just to send request and fetch data from endpoint
  *
  * @package MovaviTest\Lib
  */
-class Curl
+class HttpClient
 {
     /**
      * URL string for fetching data from
@@ -27,7 +27,7 @@ class Curl
      */
     protected $timeoutSec;
     /**
-     * Curl constructor.
+     * HttpClient constructor.
      * @param string $url
      */
     public function __construct(string $url, int $timeoutSec = 10)
@@ -53,7 +53,7 @@ class Curl
         $output = curl_exec($ch);
 
         if (curl_errno($ch)) {
-            throw new UnavailableResourceException('Curl error: ' . curl_error($ch));
+            throw new UnavailableResourceException('Http Client error: ' . curl_error($ch));
         }
 
         curl_close($ch);

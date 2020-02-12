@@ -59,13 +59,13 @@ class CurrencyRatesService
     /**
      * Sends request to particular resource
      *
-     * @param string $currencyCode
      * @param string $resourceClass
+     * @param string $currencyCode
      * @param \DateTime|null $date
      * @return float
      * @throws UnknownResourceClassException
      */
-    public function getRateFromResource(string $currencyCode, string $resourceClass, \DateTime $date = null): float
+    public function getRateFromResource(string $resourceClass, string $currencyCode, \DateTime $date = null): float
     {
         if (!in_array($resourceClass, array_keys($this->resources))) {
             throw new UnknownResourceClassException('Unknown resource class: ' . $resourceClass);

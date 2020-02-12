@@ -3,7 +3,7 @@
 namespace MovaviTest\Resources;
 
 use MovaviTest\Resources\ResourceInterface;
-use MovaviTest\Lib\Curl;
+use MovaviTest\Lib\HttpClient;
 use MovaviTest\Exceptions\UnsupportedCurrencyCodeException;
 use MovaviTest\Exceptions\NonRateException;
 
@@ -46,7 +46,7 @@ class RbcResource implements ResourceInterface
      */
     public function getRate(string $currencyCode, \DateTime $date): float
     {
-        $curlObj = new Curl($this->buildUrl($currencyCode, $date));
+        $curlObj = new HttpClient($this->buildUrl($currencyCode, $date));
         $jsonData = $curlObj->getData();
         return $this->parseJsonResponse($jsonData);
     }
