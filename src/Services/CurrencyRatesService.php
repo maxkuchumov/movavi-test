@@ -1,12 +1,13 @@
 <?php
 
-namespace MovaviTest\Services;
+namespace Movavi\Services;
 
-use MovaviTest\Resources\RbcResource;
-use MovaviTest\Resources\CbrResource;
-use MovaviTest\Resources\ResourceInterface;
-use MovaviTest\Exceptions\UnknownResourceClassException;
-use MovaviTest\Exceptions\EmptyResourceListException;
+use Movavi\Resources\RbcResource;
+use Movavi\Resources\CbrResource;
+use Movavi\Resources\ResourceInterface;
+use Movavi\Clients\ClientInterface;
+use Movavi\Exceptions\UnknownResourceClassException;
+use Movavi\Exceptions\EmptyResourceListException;
 
 
 /**
@@ -14,7 +15,7 @@ use MovaviTest\Exceptions\EmptyResourceListException;
  *
  * Manages available resources, routes requests to resources, receives data and aggregates
  *
- * @package MovaviTest\Services
+ * @package Movavi\Services
  */
 class CurrencyRatesService
 {
@@ -34,7 +35,7 @@ class CurrencyRatesService
      * @param array $resourceClasses
      * @throws UnknownResourceClassException
      */
-    public function __construct(array $resourceClasses = [])
+    public function __construct(ClientInterface $client, array $resourceClasses = [])
     {
         if (empty($resourceClasses)) {
             // by default all available resources will be used
@@ -48,7 +49,7 @@ class CurrencyRatesService
 
             if (class_exists($resourceClass, true) && in_array(ResourceInterface::class, class_implements($resourceClass))) {
 
-                $this->resources[$resourceClass] = new $resourceClass();
+                $this->resources[$resourceClass] = new $resourceClass($client);
             } else {
 
                 throw new UnknownResourceClassException('Unknown resource class: ' . $resourceClass);

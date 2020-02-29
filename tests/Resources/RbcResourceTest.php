@@ -1,40 +1,39 @@
 <?php
 
-namespace MovaviTest\Tests;
+namespace MovaviTest\Resources;
 
 use PHPUnit\Framework\TestCase;
-use MovaviTest\Resources\RbcResource;
+use Movavi\Resources\RbcResource;
+use MovaviTest\Clients\HttpClientMock;
+use MovaviTest\Clients\HttpClientBadDataMock;
 
 class RbcResourceTest extends TestCase
 {
 
-    public function test_GetRate_returnPositiveFloatRate()
+    /**
+     * @expectedException Movavi\Exceptions\NonRateException
+     */
+    public function test_GetRate_ThrowNonRateException()
     {
-        $date = new \DateTime('08.02.2020');
-        $cbrResource = new RbcResource();
+        $date = new \DateTime();
+        $rbcResource = new RbcResource(new HttpClientBadDataMock());
 
-        $usdRate = $cbrResource->getRate('USD', $date);
-        $this->assertInternalType('float', $usdRate);
-        $this->assertGreaterThan(0, $usdRate);
-
-        $eurRate = $cbrResource->getRate('EUR', $date);
-        $this->assertInternalType('float', $eurRate);
-        $this->assertGreaterThan(0, $eurRate);
+        $rbcResource->getRate('USD', $date);
     }
 
     /**
-     * @expectedException MovaviTest\Exceptions\UnsupportedCurrencyCodeException
+     * @expectedException Movavi\Exceptions\UnsupportedCurrencyCodeException
      */
     public function test_GetRate_ThrowUnsupportedCurrencyCodeException()
     {
-        $date = new \DateTime('08.02.2020');
-        $cbrResource = new RbcResource();
+        $date = new \DateTime();
+        $rbcResource = new RbcResource(new HttpClientMock());
 
-        $cbrResource->getRate('UNKNOWN', $date);
+        $rbcResource->getRate('UNKNOWN', $date);
     }
 
     /**
-     * @expectedException MovaviTest\Exceptions\NonRateException
+     * @expectedException Movavi\Exceptions\NonRateException
      */
     public function test_parseJsonResponse_TrowNonRateException()
     {
@@ -42,7 +41,7 @@ class RbcResourceTest extends TestCase
         $class = new \ReflectionClass(RbcResource::class);
         $method = $class->getMethod('parseJsonResponse');
         $method->setAccessible(true);
-        $rbcObj = new RbcResource();
+        $rbcObj = new RbcResource(new HttpClientMock());
         $method->invoke($rbcObj, $testJson);
     }
 
@@ -52,7 +51,7 @@ class RbcResourceTest extends TestCase
         $class = new \ReflectionClass(RbcResource::class);
         $method = $class->getMethod('parseJsonResponse');
         $method->setAccessible(true);
-        $rbcObj = new RbcResource();
+        $rbcObj = new RbcResource(new HttpClientMock());
         $rate = $method->invoke($rbcObj, $testJson);
         $this->assertEquals(66.666, $rate);
     }

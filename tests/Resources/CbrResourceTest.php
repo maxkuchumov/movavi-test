@@ -1,55 +1,42 @@
 <?php
 
-namespace MovaviTest\Tests;
+namespace MovaviTest\Resources;
 
 use PHPUnit\Framework\TestCase;
-use MovaviTest\Resources\CbrResource;
+use Movavi\Resources\CbrResource;
+use MovaviTest\Clients\HttpClientMock;
+use MovaviTest\Clients\HttpClientBadDataMock;
 
 class CbrResourceTest extends TestCase
 {
-
-    public function test_GetRate_returnPositiveFloatRate()
-    {
-        $date = new \DateTime('08.02.2020');
-        $cbrResource = new CbrResource();
-
-        $usdRate = $cbrResource->getRate('USD', $date);
-        $this->assertInternalType('float', $usdRate);
-        $this->assertGreaterThan(0, $usdRate);
-
-        $eurRate = $cbrResource->getRate('EUR', $date);
-        $this->assertInternalType('float', $eurRate);
-        $this->assertGreaterThan(0, $eurRate);
-    }
-
     /**
-     * @expectedException MovaviTest\Exceptions\UnsupportedCurrencyCodeException
+     * @expectedException Movavi\Exceptions\UnsupportedCurrencyCodeException
      */
     public function test_GetRate_ThrowUnsupportedCurrencyCodeException()
     {
-        $date = new \DateTime('08.02.2020');
-        $cbrResource = new CbrResource();
+        $date = new \DateTime();
+        $cbrResource = new CbrResource(new HttpClientMock());
 
         $cbrResource->getRate('UNKNOWN', $date);
     }
 
     /**
-     * @expectedException MovaviTest\Exceptions\NonRateException
+     * @expectedException Movavi\Exceptions\NonRateException
      */
     public function test_GetRate_ThrowNonRateException()
     {
-        $date = new \DateTime('+1 year');
-        $cbrResource = new CbrResource();
+        $date = new \DateTime();
+        $cbrResource = new CbrResource(new HttpClientBadDataMock());
 
         $cbrResource->getRate('USD', $date);
     }
 
     /**
-     * @expectedException MovaviTest\Exceptions\NonRateException
+     * @expectedException Movavi\Exceptions\NonRateException
      */
     public function test_parseXmlResponse_TrowNonRateException()
     {
-        // incorrect xml (wrong <NOValue> teg)
+        // incorrect xml (wrong <NOValue> tag)
         $testXml = '<ValCurs ID="R01235" DateRange1="14.03.2001" DateRange2="14.03.2001" name="Foreign Currency Market Dynamic">
                       <Record Date="14.03.2001" Id="R01235">
                         <Nominal>1</Nominal>
@@ -60,8 +47,8 @@ class CbrResourceTest extends TestCase
         $class = new \ReflectionClass(CbrResource::class);
         $method = $class->getMethod('parseXmlResponse');
         $method->setAccessible(true);
-        $rbcObj = new CbrResource();
-        $method->invoke($rbcObj, $testXml);
+        $cbrObj = new CbrResource(new HttpClientMock());
+        $method->invoke($cbrObj, $testXml);
     }
 
     public function test_parseXmlResponse_CheckReturnValue()
@@ -77,8 +64,8 @@ class CbrResourceTest extends TestCase
         $class = new \ReflectionClass(CbrResource::class);
         $method = $class->getMethod('parseXmlResponse');
         $method->setAccessible(true);
-        $rbcObj = new CbrResource();
-        $rate = $method->invoke($rbcObj, $testXml);
+        $cbrObj = new CbrResource(new HttpClientMock());
+        $rate = $method->invoke($cbrObj, $testXml);
         $this->assertEquals(28.65, $rate);
     }
 }

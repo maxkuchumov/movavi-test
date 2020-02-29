@@ -1,74 +1,62 @@
 <?php
 
 
-namespace MovaviTest\Tests;
+namespace MovaviTest\Services;
 
 use PHPUnit\Framework\TestCase;
-use MovaviTest\Services\CurrencyRatesService;
-use MovaviTest\Resources\CbrResource;
-use MovaviTest\Resources\RbcResource;
-use MovaviTest\Resources\ResourceInterface;
+use Movavi\Services\CurrencyRatesService;
+use Movavi\Resources\CbrResource;
+use Movavi\Resources\RbcResource;
+use Movavi\Resources\ResourceInterface;
+use MovaviTest\Clients\HttpClientMock;
 
 class CurrencyRatesServiceTest extends TestCase
 {
-    public function test_getAverageRate_returnPositiveFloatRate()
-    {
-        $currencyRatesService = new CurrencyRatesService();
-
-        $date = new \DateTime('08.02.2020');
-        $testRate = $currencyRatesService->getAverageRate('USD', $date);
-        $this->assertInternalType('float', $testRate);
-        $this->assertGreaterThan(0, $testRate);
-        $testRate = $currencyRatesService->getAverageRate('EUR', $date);
-        $this->assertInternalType('float', $testRate);
-        $this->assertGreaterThan(0, $testRate);
-
-    }
 
     /**
-     * @expectedException MovaviTest\Exceptions\UnsupportedCurrencyCodeException
+     * @expectedException Movavi\Exceptions\UnsupportedCurrencyCodeException
      */
     public function test_getAverageRate_ThrowUnsupportedCurrencyCodeException()
     {
-        $currencyRatesService = new CurrencyRatesService();
+        $currencyRatesService = new CurrencyRatesService(new HttpClientMock());
 
-        $date = new \DateTime('08.02.2020');
+        $date = new \DateTime();
         $currencyRatesService->getAverageRate('UNKNOWN', $date);
     }
 
     /**
-     * @expectedException MovaviTest\Exceptions\UnsupportedCurrencyCodeException
+     * @expectedException Movavi\Exceptions\UnsupportedCurrencyCodeException
      */
     public function test_getRateFromResource_ThrowUnsupportedCurrencyCodeException()
     {
-        $currencyRatesService = new CurrencyRatesService();
+        $currencyRatesService = new CurrencyRatesService(new HttpClientMock());
 
-        $date = new \DateTime('08.02.2020');
+        $date = new \DateTime();
         $currencyRatesService->getRateFromResource(RbcResource::class, 'UNKNOWN', $date);
     }
 
     /**
-     * @expectedException MovaviTest\Exceptions\UnknownResourceClassException
+     * @expectedException Movavi\Exceptions\UnknownResourceClassException
      */
     public function test_createCurrencyRatesService_ThrowUnknownResourceClassException()
     {
-        $currencyRatesService = new CurrencyRatesService(['UNKNOWN']);
+        $currencyRatesService = new CurrencyRatesService(new HttpClientMock(), ['UNKNOWN']);
     }
 
     /**
-     * @expectedException MovaviTest\Exceptions\UnknownResourceClassException
+     * @expectedException Movavi\Exceptions\UnknownResourceClassException
      */
     public function test_getRateFromResource_ThrowUnknownResourceClassException()
     {
-        $currencyRatesService = new CurrencyRatesService();
+        $currencyRatesService = new CurrencyRatesService(new HttpClientMock());
 
-        $date = new \DateTime('08.02.2020');
+        $date = new \DateTime();
         $currencyRatesService->getRateFromResource('UNKNOWN', 'USD', $date);
     }
 
     public function test_createCurrencyRatesService_ResourcesContainsTwoObjects()
     {
-        $currencyRatesService = new CurrencyRatesService([CbrResource::class, RbcResource::class]);
+        $currencyRatesService = new CurrencyRatesService(new HttpClientMock(), [CbrResource::class, RbcResource::class]);
         $refResources = new \ReflectionProperty(get_class($currencyRatesService), 'resources');
         $refResources->setAccessible(true);
         $resourcesArr = $refResources->getValue($currencyRatesService);
@@ -80,30 +68,30 @@ class CurrencyRatesServiceTest extends TestCase
     }
 
     /**
-     * @expectedException MovaviTest\Exceptions\EmptyResourceListException
+     * @expectedException Movavi\Exceptions\EmptyResourceListException
      */
     public function test_getAverageRateFromResource_TrowEmptyResourceListException()
     {
-        $currencyRatesService = new CurrencyRatesService([CbrResource::class, RbcResource::class]);
+        $currencyRatesService = new CurrencyRatesService(new HttpClientMock(), [CbrResource::class, RbcResource::class]);
         $currencyRatesService->getAverageRateFromResources([], 'USD');
     }
 
     /**
-     * @expectedException MovaviTest\Exceptions\UnknownResourceClassException
+     * @expectedException Movavi\Exceptions\UnknownResourceClassException
      */
     public function test_getAverageRateFromResource_TrowUnknownResourceClassException()
     {
-        $currencyRatesService = new CurrencyRatesService();
+        $currencyRatesService = new CurrencyRatesService(new HttpClientMock());
         $currencyRatesService->getAverageRateFromResources([CbrResource::class, 'UNKNOWN_CLASS'], 'USD');
     }
 
     public function test_getAverageRateFromResource_CheckMethodResult()
     {
-        $currencyRatesService = new CurrencyRatesService();
-        $date = new \DateTime('08.02.2020');
+        $currencyRatesService = new CurrencyRatesService(new HttpClientMock());
+        $date = new \DateTime();
         $rate = $currencyRatesService->getAverageRateFromResources([CbrResource::class, RbcResource::class], 'USD', $date);
-        $this->assertEquals(63.472, $rate);
+        $this->assertEquals(62.71, $rate);
         $rate = $currencyRatesService->getAverageRateFromResources([CbrResource::class, RbcResource::class], 'EUR', $date);
-        $this->assertEquals(69.6288, $rate);
+        $this->assertEquals(72.9, $rate);
     }
 }

@@ -1,16 +1,16 @@
 <?php
 
-namespace MovaviTest\Resources;
+namespace Movavi\Resources;
 
-use MovaviTest\Lib\HttpClient;
-use MovaviTest\Exceptions\UnsupportedCurrencyCodeException;
-use MovaviTest\Exceptions\NonRateException;
+use Movavi\Clients\ClientInterface;
+use Movavi\Exceptions\UnsupportedCurrencyCodeException;
+use Movavi\Exceptions\NonRateException;
 
 /**
  * Class CbrResource
  *
  * Provides fetching currency rates from cbr.ru
- * @package MovaviTest\Resources
+ * @package Movavi\Resources
  */
 class CbrResource implements ResourceInterface
 {
@@ -32,6 +32,22 @@ class CbrResource implements ResourceInterface
         'EUR' => 'R01239'
     ];
 
+
+    /**
+     * Object for retrieving data from resource
+     * @var ClientInterface
+     */
+    protected $httpClient;
+
+    /**
+     * CbrResource constructor.
+     */
+    public function __construct(ClientInterface $client)
+    {
+        $this->httpClient = $client;
+    }
+
+
     /**
      * Fetch rate from cbr resource
      *
@@ -40,14 +56,13 @@ class CbrResource implements ResourceInterface
      * @return float
      * @throws NonRateException
      * @throws UnsupportedCurrencyCodeException
-     * @throws \MovaviTest\Exceptions\UnavailableResourceException
+     * @throws \Movavi\Exceptions\UnavailableResourceException
      */
     public function getRate(string $currencyCode, \DateTime $date): float
     {
-        $httpClient = new HttpClient($this->buildUrl($currencyCode, $date));
-        $data = $httpClient->getData();
+        $xmlData = $this->httpClient->getData($this->buildUrl($currencyCode, $date));
 
-        return $this->parseXmlResponse($data);
+        return $this->parseXmlResponse($xmlData);
     }
 
     /**

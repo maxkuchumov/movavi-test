@@ -1,17 +1,16 @@
 <?php
 
-namespace MovaviTest\Resources;
+namespace Movavi\Resources;
 
-use MovaviTest\Resources\ResourceInterface;
-use MovaviTest\Lib\HttpClient;
-use MovaviTest\Exceptions\UnsupportedCurrencyCodeException;
-use MovaviTest\Exceptions\NonRateException;
+use Movavi\Clients\ClientInterface;
+use Movavi\Exceptions\UnsupportedCurrencyCodeException;
+use Movavi\Exceptions\NonRateException;
 
 /**
  * Class RbcResource
  *
  * Provides fetching currency rates from cash.rbc.ru
- * @package MovaviTest\Resources
+ * @package Movavi\Resources
  */
 class RbcResource implements ResourceInterface
 {
@@ -34,6 +33,21 @@ class RbcResource implements ResourceInterface
         'RUB' => 'RUR',
     ];
 
+
+    /**
+     * Object for retrieving data from resource
+     * @var ClientInterface
+     */
+    protected $httpClient;
+
+    /**
+     * RbcResource constructor.
+     */
+    public function __construct(ClientInterface $client)
+    {
+        $this->httpClient = $client;
+    }
+
     /**
      * Fetch rate from rbc resource
      *
@@ -42,12 +56,12 @@ class RbcResource implements ResourceInterface
      * @return float
      * @throws NonRateException
      * @throws UnsupportedCurrencyCodeException
-     * @throws \MovaviTest\Exceptions\UnavailableResourceException
+     * @throws \Movavi\Exceptions\UnavailableResourceException
      */
     public function getRate(string $currencyCode, \DateTime $date): float
     {
-        $curlObj = new HttpClient($this->buildUrl($currencyCode, $date));
-        $jsonData = $curlObj->getData();
+        $jsonData = $this->httpClient->getData($this->buildUrl($currencyCode, $date));
+
         return $this->parseJsonResponse($jsonData);
     }
 

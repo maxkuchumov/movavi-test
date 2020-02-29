@@ -1,13 +1,16 @@
 {
   "require": {
-    "php": ">=7.0"
+    "php": ">=7.0",
+    "ext-SimpleXML": "*",
+    "ext-json": "*"
   },
   "require-dev": {
     "phpunit/phpunit": "6.*"
   },
   "autoload": {
     "psr-4": {
-      "MovaviTest\\": "src/"
+      "Movavi\\": "src/",
+      "MovaviTest\\": "tests/"
     }
   }
 }
